@@ -1,0 +1,199 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.containerInit {
+    display: flex;
+}
+
+.background {
+    flex-grow: 4;
+    height: 100vh;
+    max-width: 60%;
+    background-image: url("http://192.168.9.139/22-07-2019/fdesposte/public/svg/background2.jpg") !important;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: local;
+    background-position: center;
+    padding-right: 3rem;
+}
+
+.formInicio {
+    flex-grow: 2;
+    max-width: 40%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.titleLogin {
+    color: rgba(229, 48, 48, 1);
+    font-size: 3.5rem;
+    font-weight: bold;
+}
+
+.forgotPassword {
+    color: rgba(229, 48, 48, 1);
+    font-size: 1.5rem;
+}
+
+.forgotPassword:hover{
+    cursor: pointer;
+}
+
+.labelUsername,
+.labelPassword,
+.labelCheckbox {
+    font-size: 1.5rem;
+}
+
+.labelCheckbox {
+    margin-left: 0.5rem;
+}
+
+.styleInput {
+    width: 100%;
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+    background: #DCE8F5;
+    border-style: none;
+    height: 2.5rem;
+    margin-bottom: 1rem;
+    padding: 10px 20px;
+}
+
+.btnInicioSesion {
+    background-color: rgba(229, 48, 48, 1);
+    color: white;
+    font-size: 1.3rem;
+    border-style: none;
+    height: 3rem;
+    width: 10rem;
+    float: right;
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+}
+
+.contentBackground {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    margin-top: 40vh;
+}
+
+.titleInicial {
+    font-size: 5rem;
+    color: white;
+    border-bottom: 5px solid white;
+    margin-left: 1rem;
+}
+
+.followUs {
+    font-size: 2rem;
+    color: white;
+    margin-left: 1rem;
+}
+
+.iconInstagram,
+.iconFacebook {
+    width: 5rem;
+    height: 5rem;
+    margin-left: 1rem;
+}
+
+.logoCercafe {
+    margin-top: 3rem;
+    width: auto;
+    height: 5rem;
+    float: right;
+}
+
+#botoErrorInicioSesion {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    body {
+        width: 100%;
+        height: 100vh;
+    }
+    .containerInit {
+        display: flex;
+        flex-direction: column-reverse;
+        width: 100%;
+        background-image: url("http://192.168.9.139/22-07-2019/fdesposte/public/svg/background2.jpg") !important;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: local;
+        background-position: center;
+    }
+    .background {
+        background-color: transparent !important;
+        background: none !important;
+        margin-top: 0%;
+        padding-right: 0;
+        width: 100%;
+        max-width: 100%;
+        height: 30%;
+        padding-bottom: 3rem;
+    }
+    .formInicio {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex-grow: 0;
+        width: 100%;
+        max-width: 100%;
+        height: 60%;
+        background-color: #fff;
+        padding-bottom: 0.5rem;
+    }
+    .contentBackground2 {
+        display: flex;
+    }
+    .ContentForm {
+        padding: 1rem;
+    }
+    .contentBackground {
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+        margin-top: 0;
+    }
+    .titleInicial {
+        font-size: 3rem;
+        color: white;
+        border-bottom: 5px solid white;
+        margin-left: 1rem;
+    }
+    .followUs {
+        font-size: 1.5rem;
+        color: white;
+        margin-left: 1rem;
+    }
+    .iconInstagram,
+    .iconFacebook {
+        width: 4rem;
+        height: 4rem;
+        margin-left: 1rem;
+    }
+    .logoCercafe {
+        margin-top: 2rem;
+        width: auto;
+        height: 5rem;
+        float: center;
+        padding-right: 2rem;
+    }
+    .titleLogin {
+        font-size: 2.5rem;
+    }
+    .forgotPassword {
+        font-size: 1rem;
+    }
+}
