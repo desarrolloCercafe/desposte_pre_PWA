@@ -65,7 +65,13 @@
         window.onload = inicio;
 
         function inicio(){
+
+          if(!sessionStorage.getItem("CambioIniciado")){
+            sessionStorage.setItem("CambioIniciado", 1);
             document.getElementById('btnNewPassword').click();
+          }else{
+            window.location.href = "http://127.0.0.1:8000/";
+          }
         }
 
         document.getElementById('sendPasswordVerifcation').addEventListener('click', function(){

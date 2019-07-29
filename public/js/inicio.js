@@ -25,12 +25,16 @@ window.onload = inicio();
           }
           //localStorage.setItem("recordar",1);
 
+          if(sessionStorage.getItem("CambioIniciado")){
+            sessionStorage.removeItem("CambioIniciado");
+          }
+
             var objeto = {
               usuario:usuario.value,
               password:password.value
             };
 
-            QueryIniciarSistema(objeto)
+            QueryIniciarSistema(objeto);
             //document.getElementById('form_inicio').submit();
         }else{
             e.preventDefault();
