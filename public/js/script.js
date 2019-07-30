@@ -4,7 +4,7 @@ function ListarLocalStorage(){
 
     
     if(!localStorage.getItem('nombre')){
-        window.location.href = "http://127.0.0.1:8000/";
+        window.location.href = "http://192.241.142.141/";
     }
 
     document.getElementById('vendedor').value = localStorage.getItem("nombre");
@@ -50,7 +50,7 @@ function ListarLocalStorage(){
             </td>
             <td>
                 <button type="button" class="btn btn-danger" value='${i}' data-target="#ModalDelete" data-toggle="modal" onclick="eliminarProducto(this)">
-                    <img src="http://192.168.9.139/25-07-2019-Inicio/fdesposte/public/svg/delete2.svg" id="${i}"></img>
+                    <img src="../svg/delete.png" id="${i}" width="15px" height="15px"></img>
                 </button>
             </td>
         </tr>

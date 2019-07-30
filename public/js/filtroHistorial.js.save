@@ -1,20 +1,13 @@
 window.onload = VerificarDespliegueHistorial;
 
 document.getElementById('rangoFechasHistorial').addEventListener('change',function(){
+
 	var select = document.getElementById('rangoFechasHistorial');
 	value = select.value;
-
-	if(value != 0){
-		document.getElementById('GlobalGenerarCSV').disabled = false;
-		document.getElementById('GlobalGenerarPDF').disabled = false;
-	}else{
-		document.getElementById('GlobalGenerarCSV').disabled = true;
-		document.getElementById('GlobalGenerarPDF').disabled = true;
-	}
-
 	if(value == 3){
 		var btnModal = document.getElementById('btnDespliegueRangoFechas');
 		btnModal.click();
+//		alert('hola');
 	}
 
 });
@@ -37,7 +30,8 @@ document.getElementById('GlobalGenerarCSV').addEventListener('click', function (
         var data = SaveData();
         SendQueryHistorialCSV(data);
     }else{
-        var messageError = document.getElementById('textInfo'); 
+        var messageError = document.getElementById('textInfo');
+        
         messageError.innerHTML = "No haz seleccionado ningún tipo de filtro";
         document.getElementById('DesplegarErrorModal').click();
     }
@@ -50,7 +44,7 @@ document.getElementById('GlobalGenerarPDF').addEventListener('click', function (
         SendQueryHistorialPDF(data);
     }else{
         var messageError = document.getElementById('textInfo');
-
+        
         messageError.innerHTML = "No haz seleccionado ningún tipo de filtro";
         document.getElementById('DesplegarErrorModal').click();
     }
@@ -524,26 +518,3 @@ function TableProductoHistorial(objeto) {
     `;
 
 }
-
-//Funciones para la activación de los botones generales sobre PDF y CSV
-document.getElementById('codClienteHistorial').addEventListener('keyup', function(){
-	var cliente = document.getElementById('codClienteHistorial').value;
-	if(cliente.length > 0){
-		document.getElementById('GlobalGenerarCSV').disabled = false;
-		document.getElementById('GlobalGenerarPDF').disabled = false;
-	}else{
-		document.getElementById('GlobalGenerarCSV').disabled = true;
-		document.getElementById('GlobalGenerarPDF').disabled = true;
-	}
-});
-
-document.getElementById('tipoPresentacionHistorial').addEventListener('change',function(){
-	var select = document.getElementById('tipoPresentacionHistorial');
-	if(select.value != 1){
-		document.getElementById('GlobalGenerarCSV').disabled = false;
-		document.getElementById('GlobalGenerarPDF').disabled = false;
-	}else{
-		document.getElementById('GlobalGenerarCSV').disabled = true;
-		document.getElementById('GlobalGenerarPDF').disabled = true;
-	}
-});

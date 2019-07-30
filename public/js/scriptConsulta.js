@@ -1,7 +1,7 @@
 window.addEventListener('load', function(){
 
     if(!localStorage.getItem('nombre')){
-        window.location.href = "http://127.0.0.1:8000/";
+        window.location.href = "http://192.241.142.141/";
     }
     
     if(this.localStorage.getItem("despliegue")){

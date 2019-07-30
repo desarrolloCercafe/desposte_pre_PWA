@@ -3,7 +3,7 @@ window.onload = inicio();
     function inicio(){
 
       if(localStorage.getItem('nombre')){
-        window.location.href = "http://127.0.0.1:8000/solicitud";
+        window.location.href = "http://192.241.142.141/solicitud";
       }
 
       if(localStorage.getItem('usuario') || localStorage.getItem('password')){
@@ -167,7 +167,7 @@ window.onload = inicio();
                 localStorage.setItem('password', objeto.password);
               }
               localStorage.setItem('nombre', response);
-              window.location.href = "http://127.0.0.1:8000/solicitud";
+              window.location.href = "http://192.241.142.141/solicitud";
             }
             //console.log(response);
             /*var respuesta = ajax.responseText;

@@ -70,7 +70,7 @@
             sessionStorage.setItem("CambioIniciado", 1);
             document.getElementById('btnNewPassword').click();
           }else{
-            window.location.href = "http://127.0.0.1:8000/";
+            window.location.href = "http://192.241.142.141/";
           }
         }
 
@@ -122,7 +122,7 @@
                     var json = ajax.responseText;
                     if(json == "Ok"){
                         borrarCredenciales();
-                        window.location.href="http://127.0.0.1:8000/";
+                        window.location.href="http://192.241.142.141/";
                     }
 
                 }

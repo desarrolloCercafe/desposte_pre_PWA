@@ -30,7 +30,7 @@
 
         <section class="contentBackground2">
             <img src="{{asset('svg/btnfacebook.svg')}}" alt="Facebook" class="iconFacebook">
-            <img src="{{asset('svg/btninstagram.svg')}}" alt="Facebook" class="iconInstagram">
+            <img src="{{asset('svg/btnInstagram.svg')}}" alt="Facebook" class="iconInstagram">
         </section>
 
         <img src="{{asset('svg/logoBlanco.png')}}" alt="logo blanco" class="logoCercafe">

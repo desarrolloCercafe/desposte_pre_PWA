@@ -1,9 +1,39 @@
 //Evento de despliegue de la modal del rango de fechas; el evento se activa una vez seleccionado
 //la opción "Otro" en el select de fechas
-function DespliegueModal(){
-    var btnModal = document.getElementById('btnDespliegueRangoFechas');
-        btnModal.click();
-}
+/*function DespliegueModal(){
+	setTimeout(function(){
+		if(document.getElementById('rangoFechas').value == 3){
+			var btnModal = document.getElementById('btnDespliegueRangoFechas');
+			btnModal.click()
+		}
+	},1500);
+   /* var btnModal = document.getElementById('btnDespliegueRangoFechas');
+        btnModal.click();*/
+   // alert('fdjhlkj');
+//}
+
+/*setTimeout(
+	function(){
+	 /* if(document.getElementById('rangoFechas').value == 3){
+	    var btnModal = document.getElementById('btnDespliegueRangoFechas');
+            btnModal.click();
+	  }*/
+/*	  alert('fkld');
+	},1500);*/
+
+document.getElementById('rangoFechas').addEventListener('change', function(){
+	var select = document.getElementById('rangoFechas');
+	value = select.value;
+	if(value == 3){
+		var btnModal = document.getElementById('btnDespliegueRangoFechas');
+		btnModal.click();
+		/*alert('fjkgfkj');*/
+	}
+	/*if(document.getElementById('rangoFechas').value == 3){
+		DespliegueModal();
+	}*/
+	//alert('jkshkgjhf');
+})
 
 //Evento listener para la validación del rango de fechas
 document.getElementById('RangoFechasFiltroSuccess').addEventListener('click', function(){

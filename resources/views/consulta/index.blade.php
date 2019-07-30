@@ -190,7 +190,7 @@
                             <option value="0" selected>Seleccionar una fecha de búsqueda</option>
                             <option value="1">Hoy</option>
                             <option value="2">Ayer</option>
-                            <option value="3" onclick="DespliegueModal()">Otro</option>
+                            <option value="3">Otro</option>
                         </select>
                     </div>
 
@@ -312,8 +312,8 @@
                                 <form action="{{route('CSVGeneral')}}" method="post" id="csvGeneral">
                                     {{ csrf_field() }}
                                 </form>
-                                <button type="button" class="btn btn-secondary btn-lg" id="GlobalGenerarPDF">Generar PDF</button>
-                                <button type="button" class="btn btn-secondary btn-lg" id="GlobalGenerarCSV">Generar CSV</button>
+                                <button type="button" class="btn btn-secondary btn-lg" id="GlobalGenerarPDF" disabled>Generar PDF</button>
+                                <button type="button" class="btn btn-secondary btn-lg" id="GlobalGenerarCSV" disabled>Generar CSV</button>
                             </div>
                         </div>
                     </div>
