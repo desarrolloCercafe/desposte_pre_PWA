@@ -30,9 +30,9 @@ function ListarLocalStorage(){
             <td>
                 ${x.cantidad > 0 ?
                     `
-                    <input type="number" min="0" name="cantidad${i}" class="form-control" value="${x.cantidad}" id="CantidadSolicitada${i}">
+                    <input type="number" min="0" name="cantidad${i}" class="form-control" value="${x.cantidad}" id="CantidadSolicitada${i}" step="0.01">
                     `:`
-                    <input type="number" min="0" name="cantidad${i}" class="form-control" value="" id="CantidadSolicitada${i}">
+                    <input type="number" min="0" name="cantidad${i}" class="form-control" value="" id="CantidadSolicitada${i}" step="0.01">
                     `
                 }
             </td>

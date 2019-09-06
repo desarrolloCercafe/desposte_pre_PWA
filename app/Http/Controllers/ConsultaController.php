@@ -9,13 +9,11 @@ use App\Pedido;
 use App\Solicitud;
 use DB;
 use PDF;
-
-
+use DateTime;
+use File;
 class ConsultaController extends Controller
 {
-    /*public function home(){
-        return view('consulta.index');
-    }*/
+    /**/
 
      /**
      * Display a listing of the resource.
@@ -81,7 +79,7 @@ class ConsultaController extends Controller
                     
                     '<td>'.$ProductoSolicitado->unidadMedida.'</td>'.
 
-                    '<td><input type="number" id="cantidadDespachada'.$i.'" name="cantidadDespachada'.$i.'" class="form-control"></td>'.
+                    '<td><input type="number" id="cantidadDespachada'.$i.'" name="cantidadDespachada'.$i.'" class="form-control" step="0.01"></td>'.
                     
                     '</tr>';
 
@@ -95,7 +93,31 @@ class ConsultaController extends Controller
         }
     }
 
-    
+    public function filtrar_por_consecutivo(Request $request){
+        header("Content-type: application/json");
+        $filtros = json_decode(stripslashes(file_get_contents("php://input")));
+        $filtros = json_decode(stripslashes($request->consecutivo));
+
+        $response = "";
+
+	$response = DB::select(
+		'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
+		FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id
+		AND ped.id = ?',
+         	[$filtros]
+  		);
+        /**/
+
+	if(Count($response)){
+		return json_encode($response);
+	}else{
+		$response = "no hay resultados";
+		return json_encode($response);
+	}
+
+        //return json_encode($response);
+
+    }
     /**
      * Display a listing of the resource.
      *
@@ -192,122 +214,194 @@ class ConsultaController extends Controller
         //$tipoBusqueda = $request->opcion;
 
         $datosFiltrados = "";
-        //$datosFiltrados = $filtros->cliente;
-        if(isset($filtros->fechaInicio) && isset($filtros->cliente) && isset($filtros->tipoPresentacion)){
 
-            //Consulta ejecutada normalmente
-            if($filtros->tipoPresentacion == 1){
-                $datosFiltrados = DB::select(
-                    'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
-                    FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id 
-                    AND ped.codCliente = ? AND ped.fechaEntrega BETWEEN ? AND ? ', 
-                    [$filtros->cliente, $filtros->fechaInicio, $filtros->fechaFin]
-                );
-            }else{
-                $datosFiltrados = DB::select(
-                    'SELECT prod.codigo, prod.nombre as NombreProd, sol.cantidadSolicitada, sol.unidadMedida,
-                    cl.razonSocial as NombreCl, ped.id FROM producto as prod
-                    INNER JOIN solicitud as sol ON sol.codProducto = prod.codigo 
-                    INNER JOIN pedido as ped ON ped.id = sol.codPedido 
-                    INNER JOIN cliente as cl ON cl.id = ped.codCliente WHERE 
-                    cl.id = ? AND ped.fechaEntrega BETWEEN ? AND ? AND ped.estado = 1 ', 
-                    [$filtros->cliente, $filtros->fechaInicio, $filtros->fechaFin]
-                );
-            }
+	if($filtros->tipoPresentacion == 1){
 
-        }elseif(isset($filtros->fechaInicio) && isset($filtros->cliente)){
+		if(isset($filtros->codCliente)){
+			$codCliente = $filtros->codCliente;
+		}
 
-            $datosFiltrados = DB::select(
-                'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
-                FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id 
-                AND ped.codCliente = ? AND ped.fechaEntrega BETWEEN ? AND ? ', 
-                [$filtros->cliente, $filtros->fechaInicio, $filtros->fechaFin]
-            );
+		if(isset($filtros->validarFecha)){
 
-        }elseif(isset($filtros->fechaInicio) && isset($filtros->tipoPresentacion)){
+			if($filtros->validarFecha == 1){
+				$hoy = $filtros->FechaHoy;
+			}elseif($filtros->validarFecha == 2){
+                                $fechaAyerNeta = $filtros->FechaAyer;
+                                $ayer = strtotime('-1 day', strtotime($fechaAyerNeta));
+                                $ayer = date('Y-m-j', $ayer);
+			}else{
+				$fechaInicio = $filtros->fechaInicio;
+				$fechaFin = $filtros->fechaFin;
+			}
 
-            //Consulta ejecutada normalmente
-            if($filtros->tipoPresentacion == 1){
-                $datosFiltrados = DB::select(
-                    'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
-                    FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id 
-                    AND ped.fechaEntrega BETWEEN ? AND ? ', 
-                    [$filtros->fechaInicio, $filtros->fechaFin]
-                );
-            }else{
-                $datosFiltrados = DB::select(
-                    'SELECT prod.codigo, prod.nombre as NombreProd, sol.cantidadSolicitada, sol.unidadMedida,
-                    cl.razonSocial as NombreCl, ped.id FROM producto as prod
-                    INNER JOIN solicitud as sol ON sol.codProducto = prod.codigo
-                    INNER JOIN pedido as ped ON ped.id = sol.codPedido
-                    INNER JOIN cliente as cl ON cl.id = ped.codCliente WHERE
-                    ped.fechaEntrega BETWEEN ? AND ? AND ped.estado = 1 ', 
-                    [$filtros->fechaInicio, $filtros->fechaFin]
-                );
-            }
+		}
 
-        }elseif(isset($filtros->cliente) && isset($filtros->tipoPresentacion)){
-            
-            //Consulta ejecutada normalmente
-            if($filtros->tipoPresentacion == 1){
-                $datosFiltrados = DB::select(
-                    'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
-                    FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id 
-                    AND ped.CodCliente = ?', 
-                    [$filtros->cliente]
-                );
-            }else{
-                $datosFiltrados = DB::select(
-                    'SELECT prod.codigo, prod.nombre as NombreProd, sol.cantidadSolicitada, sol.unidadMedida,
-                    cl.razonSocial as NombreCl, ped.id FROM producto as prod
-                    INNER JOIN solicitud as sol ON sol.codProducto = prod.codigo 
-                    INNER JOIN pedido as ped ON ped.id = sol.codPedido 
-                    INNER JOIN cliente as cl ON cl.id = ped.codCliente WHERE 
-                    cl.id = ? AND ped.estado = 1  ', 
-                    [$filtros->cliente]
-                );
-            }
+		if(isset($filtros->valorFecha) && isset($filtros->codCliente)){
+                        if($filtros->validarFecha == 1){
+                           $datosFiltrados = DB::select(
+                                    'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
+                                    FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id
+                                    AND ped.codCliente = ? AND ped.fechaEntrega = ? ',
+                                    [$codCliente, $hoy]
+                            );
 
+                        }elseif($filtros->validarFecha == 2){
+                           $datosFiltrados = DB::select(
+                                    'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
+                                    FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id
+                                    AND ped.codCliente = ? AND ped.fechaEntrega = ? ',
+                                    [$codCliente, $ayer]
+                            );
+ 
+                        }else{
+                            $datosFiltrados = DB::select(
+		                    'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
+		                    FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id
+                		    AND ped.codCliente = ? AND ped.fechaEntrega BETWEEN ? AND ? ',
+        	        	    [$codCliente, $fechaInicio, $fechaFin]
+	                    );
+                        }
+		}elseif(isset($filtros->valorFecha)){
+                        if($filtros->validarFecha == 1){
+                            $datosFiltrados = DB::select(
+                                    'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
+                                    FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id
+                                    AND ped.fechaEntrega = ? ',
+                                    [$hoy]
+                            );
 
-        }elseif(isset($filtros->fechaInicio)){
+                        }elseif($filtros->validarFecha == 2){
+                            $datosFiltrados = DB::select(
+                                    'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
+                                    FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id
+                                    AND ped.fechaEntrega = ? ',
+                                    [$ayer]
+                            );
 
-            $datosFiltrados = DB::select(
-                'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
-                FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id 
-                AND ped.fechaEntrega BETWEEN ? AND ? ', 
-                [$filtros->fechaInicio, $filtros->fechaFin]
-            );
+                        }else{
+                            $datosFiltrados = DB::select(
+                                    'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
+                                    FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id
+                                    AND ped.fechaEntrega BETWEEN ? AND ? ',
+                                    [$fechaInicio, $fechaFin]
+                            );
 
-        }elseif(isset($filtros->cliente)){
+                        }
+		}elseif(isset($filtros->codCliente)){
+                           $datosFiltrados = DB::select(
+                                    'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
+                                    FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id
+                                    AND ped.codCliente = ?',
+                                    [$codCliente]
+                            );
+		}
 
-            $datosFiltrados = DB::select(
-                'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
-                FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id 
-                AND ped.codCliente = ?', 
-                [$filtros->cliente]
-            );
+	}else{
+                if(isset($filtros->codCliente)){
+                        $codCliente = $filtros->codCliente;
+                }
 
-        }elseif(isset($filtros->tipoPresentacion)){
+                if(isset($filtros->validarFecha)){
 
-            //Consulta ejecutada normalmente
-            if($filtros->tipoPresentacion == 1){
-                $datosFiltrados = DB::select(
-                    'SELECT ped.id, ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial, ped.estado
-                    FROM pedido as ped, cliente as cl WHERE ped.estado = 1 AND ped.codCliente = cl.id ', 
-                    []
-                );
-            }else{
-                $datosFiltrados = DB::select(
-                    'SELECT prod.codigo, prod.nombre as NombreProd, sol.cantidadSolicitada, sol.unidadMedida,
-                    cl.razonSocial as NombreCl, ped.id FROM producto as prod 
-                    INNER JOIN solicitud as sol ON sol.codProducto = prod.codigo 
-                    INNER JOIN pedido as ped ON ped.id = sol.codPedido 
-                    INNER JOIN cliente as cl ON cl.id = ped.codCliente WHERE
-                    ped.estado = 1 ', 
-                    []
-                );
-            }
-        }
+                        if($filtros->validarFecha == 1){
+                                $hoy = $filtros->FechaHoy;
+                        }elseif($filtros->validarFecha == 2){
+                                $fechaAyerNeta = $filtros->FechaAyer;
+                                $ayer = strtotime('-1 day', strtotime($fechaAyerNeta));
+                                $ayer = date('Y-m-j', $ayer);
+                        }else{
+                                $fechaInicio = $filtros->fechaInicio;
+                                $fechaFin = $filtros->fechaFin;
+                        }
+
+                }
+
+                if(isset($filtros->valorFecha) && isset($filtros->codCliente)){
+
+                        if($filtros->validarFecha == 1){
+                                $datosFiltrados = DB::select(
+                                            'SELECT prod.codigo, prod.nombre as NombreProd, sol.cantidadSolicitada, sol.unidadMedida,
+                                            cl.razonSocial as NombreCl, ped.id FROM producto as prod
+                                            INNER JOIN solicitud as sol ON sol.codProducto = prod.codigo
+                                            INNER JOIN pedido as ped ON ped.id = sol.codPedido
+                                            INNER JOIN cliente as cl ON cl.id = ped.codCliente WHERE
+                                            cl.id = ? AND ped.fechaEntrega = ? AND ped.estado = 1 ',
+                                            [$codCliente, $hoy]
+                                );
+
+                        }elseif($filtros->validarFecha == 2){
+                                $datosFiltrados = DB::select(
+                                            'SELECT prod.codigo, prod.nombre as NombreProd, sol.cantidadSolicitada, sol.unidadMedida,
+                                            cl.razonSocial as NombreCl, ped.id FROM producto as prod
+                                            INNER JOIN solicitud as sol ON sol.codProducto = prod.codigo
+                                            INNER JOIN pedido as ped ON ped.id = sol.codPedido
+                                            INNER JOIN cliente as cl ON cl.id = ped.codCliente WHERE
+                                            cl.id = ? AND ped.fechaEntrega = ? AND ped.estado = 1 ',
+                                            [$codCliente, $ayer]
+                                );
+
+                        }else{
+                              $datosFiltrados = DB::select(
+			                    'SELECT prod.codigo, prod.nombre as NombreProd, sol.cantidadSolicitada, sol.unidadMedida,
+        			            cl.razonSocial as NombreCl, ped.id FROM producto as prod
+			                    INNER JOIN solicitud as sol ON sol.codProducto = prod.codigo
+			                    INNER JOIN pedido as ped ON ped.id = sol.codPedido
+			                    INNER JOIN cliente as cl ON cl.id = ped.codCliente WHERE
+			                    cl.id = ? AND ped.fechaEntrega BETWEEN ? AND ? AND ped.estado = 1 ',
+			                    [$codCliente, $fechaInicio, $fechaFin]
+		                );
+	      		}
+                }elseif(isset($filtros->valorFecha)){
+
+                        if($filtros->validarFecha == 1){
+                                $datosFiltrados = DB::select(
+                                            'SELECT prod.codigo, prod.nombre as NombreProd, sol.cantidadSolicitada, sol.unidadMedida,
+                                            cl.razonSocial as NombreCl, ped.id FROM producto as prod
+                                            INNER JOIN solicitud as sol ON sol.codProducto = prod.codigo
+                                            INNER JOIN pedido as ped ON ped.id = sol.codPedido
+                                            INNER JOIN cliente as cl ON cl.id = ped.codCliente WHERE
+                                            ped.fechaEntrega = ? AND ped.estado = 1 ',
+                                            [$hoy]
+                                );
+
+                        }elseif($filtros->validarFecha == 2){
+                                $datosFiltrados = DB::select(
+                                            'SELECT prod.codigo, prod.nombre as NombreProd, sol.cantidadSolicitada, sol.unidadMedida,
+                                            cl.razonSocial as NombreCl, ped.id FROM producto as prod
+                                            INNER JOIN solicitud as sol ON sol.codProducto = prod.codigo
+                                            INNER JOIN pedido as ped ON ped.id = sol.codPedido
+                                            INNER JOIN cliente as cl ON cl.id = ped.codCliente WHERE
+                                            ped.fechaEntrega = ? AND ped.estado = 1 ',
+                                            [$ayer]
+                                );
+
+                        }else{
+                                $datosFiltrados = DB::select(
+                                            'SELECT prod.codigo, prod.nombre as NombreProd, sol.cantidadSolicitada, sol.unidadMedida,
+                                            cl.razonSocial as NombreCl, ped.id FROM producto as prod
+                                            INNER JOIN solicitud as sol ON sol.codProducto = prod.codigo
+                                            INNER JOIN pedido as ped ON ped.id = sol.codPedido
+                                            INNER JOIN cliente as cl ON cl.id = ped.codCliente WHERE
+                                            ped.fechaEntrega BETWEEN ? AND ? AND ped.estado = 1 ',
+                                            [$fechaInicio, $fechaFin]
+                                );
+
+                        }
+
+                }elseif(isset($filtros->codCliente)){
+                              $datosFiltrados = DB::select(
+                                            'SELECT prod.codigo, prod.nombre as NombreProd, sol.cantidadSolicitada, sol.unidadMedida,
+                                            cl.razonSocial as NombreCl, ped.id FROM producto as prod
+                                            INNER JOIN solicitud as sol ON sol.codProducto = prod.codigo
+                                            INNER JOIN pedido as ped ON ped.id = sol.codPedido
+                                            INNER JOIN cliente as cl ON cl.id = ped.codCliente WHERE
+                                            cl.id = ? AND ped.estado = 1 ',
+                                            [$codCliente]
+                                );
+                }
+
+	}
+/**/
 
         if(Count($datosFiltrados) == 0){
             $datosFiltrados = "no hay resultados";
@@ -316,33 +410,84 @@ class ConsultaController extends Controller
         return json_encode($datosFiltrados);
     }
 
-    public function GenerarCSV(Request $request){
+    public function GenerarCSV($consecutivo){
 
-        $pedido = new Pedido();
+        $datosFiltrados = DB::select(
+            'SELECT ped.fechaSolicitud, 
+                    tipoCl.patronContable,
+                    ped.id,
+		    ped.consecutivo,
+                    cl.nit,
+                    cl.razonSocial,
+                    tipoCl.formaPago,
+                    prod.codigo,
+                    sol.cantidadDespachada,
+                    lprod.valorMayorista,
+                    lprod.valorCebarte,
+                    lprod.valorValencia,
+                    tipoCl.valorTipoCliente 
+            FROM pedido as ped 
+                    INNER JOIN cliente as cl ON ped.codCliente = cl.id 
+                    INNER JOIN tipocliente as tipoCl ON cl.clienteTipo = tipoCl.id 
+                    INNER JOIN solicitud as sol ON sol.codPedido = ped.id 
+                    INNER JOIN producto as prod ON prod.codigo = sol.codProducto 
+                    INNER JOIN listaproducto as lprod ON prod.codigo = lprod.idProducto 
+            WHERE ped.estado = 2 AND ped.id = ?', 
+            [$consecutivo]);
 
-        $pedido->consecutivo = request('consecutivo');
-
-        //echo $pedido->consecutivo;
-        $salida = fopen('php://output', 'w');
-
-        $resultados = DB::select('SELECT ped.id, ped.codCliente, 
-                                    ped.fechaSolicitud, ped.fechaEntrega, cl.razonSocial FROM
-                                    pedido AS ped, cliente AS cl WHERE 
-                                    ped.id = ? AND ped.codCliente = cl.id', 
-                                    [$pedido->consecutivo]);
-
-        $separador = ";";
+	$salida = fopen('php://output', 'wb');
+        $separador = ",";
 
         header('Content-Type:text/csv; charset=UTF-8');
-        header('Content-Disposition: attachment; filename="Reporte_Fechas_Ingreso.csv"');
+	header('Content-Disposition: attachment; filename="Reporte_Pedido.csv"');
 
-        fputcsv($salida, array('Consecutivo', 'Cliente', 'FechaSolicitud', 'FechaEntrega'), $separador);
+        foreach ($datosFiltrados as $key) {
 
-        foreach ($resultados as $key) {
-            fputcsv($salida, array($key->id,
-                                    $key->razonSocial,
-                                    $key->fechaSolicitud,
-                                    $key->fechaEntrega), $separador);
+		//$FechaActual = date()
+
+	      $newFechaSolicitud = date("d/m/Y");
+		$consecutivo = substr($key->consecutivo, 4);
+            if($key->patronContable == "FV2"){
+                if($key->valorTipoCliente == 1){
+		$valor = array($newFechaSolicitud, $key->patronContable, "FV2", $consecutivo, $newFechaSolicitud, $key->nit, $key->razonSocial, "38", "Producto subido por archivo plano", $key->formaPago, "30", $key->codigo, $key->cantidadDespachada, $key->valorMayorista, "0", "07", $key->patronContable);
+                    fputs($salida, implode($valor, ','));
+                }else{
+		$valor = array($newFechaSolicitud, $key->patronContable, "FV2", $consecutivo, $newFechaSolicitud, $key->nit, $key->razonSocial, "38", "Producto subido por archivo plano", $key->formaPago, "30", $key->codigo, $key->cantidadDespachada, $key->valorValencia, "0", "07", $key->patronContable);
+                    fputs($salida, implode($valor,','));
+                }
+            }else{
+                if($key->valorTipoCliente == 1){
+                    switch ($key->formaPago) {
+                        case '03':
+                            $nuevaFecha = strtotime('+1 day', strtotime($key->fechaSolicitud));
+                            $nuevaFecha = date('j/m/Y', $nuevaFecha);
+			    $valor = array($newFechaSolicitud, $key->patronContable, "EMAN", $consecutivo, $nuevaFecha, $key->nit, $key->razonSocial, "38", "Producto subido por archivo plano", $key->formaPago, "30", $key->codigo, $key->cantidadDespachada, $key->valorMayorista, "0", "07", $key->patronContable);
+                            fputs($salida, implode($valor, ','));
+                            break;
+                        case '04':
+                            $nuevaFecha = strtotime('+8 day', strtotime($key->fechaSolicitud));
+                            $nuevaFecha = date('j/m/Y', $nuevaFecha);
+			    $valor = array($newFechaSolicitud, $key->patronContable, "EMAN", $consecutivo, $nuevaFecha, $key->nit, $key->razonSocial, "38", "Producto subido por archivo plano", $key->formaPago, "30", $key->codigo, $key->cantidadDespachada, $key->valorMayorista, "0", "07", $key->patronContable);
+                            fputs($salida, implode($valor, ','));
+                            break;
+                        case '05':
+                            $nuevaFecha = strtotime('+15 day', strtotime($key->fechaSolicitud));
+                            $nuevaFecha = date('j/m/Y', $nuevaFecha);
+			    $valor = array($newFechaSolicitud, $key->patronContable, "EMAN", $consecutivo, $nuevaFecha, $key->nit, $key->razonSocial, "38", "Producto subido por archivo plano", $key->formaPago, "30", $key->codigo, $key->cantidadDespachada, $key->valorMayorista, "0", "07", $key->patronContable);
+                            fputs($salida, implode($valor, ','));
+                            break;
+                    }
+                }else{
+                    $nuevaFecha = strtotime('+8 day', strtotime($key->fechaSolicitud));
+                    $nuevaFecha = date('j/m/Y', $nuevaFecha);
+		    $valor = array($newFechaSolicitud, $key->patronContable, "EMAN", $consecutivo, $nuevaFecha, $key->nit, $key->razonSocial, "38", "Producto subido por archivo plano", $key->formaPago, "30", $key->codigo, $key->cantidadDespachada, $key->valorCebarte, "0", "07", $key->patronContable);
+                    fputs($salida, implode($valor, ','));
+                }
+            }
+		fwrite($salida, $separador);
+		$eol = "\r\n";
+		fwrite($salida, $eol);
+
         }
 
     }

@@ -37,9 +37,15 @@ Route::get('/filtrarTable', 'ConsultaController@FiltrarTabla')->name('filtrarTab
 
 Route::get('/filtrarHistorial', 'HistorialController@FiltrarHistorial')->name('filtrarHistorial');
 
-Route::post('/GenerarCSV', 'ConsultaController@GenerarCSV')->name('GenerarCSV');
+Route::get('/filtrar_pedido_por_alistar_consecutivo', 'ConsultaController@filtrar_por_consecutivo')->name('filtrar_pedido_por_alistar_consecutivo');
 
-Route::post('/CSVGeneral', 'HistorialController@CSVGeneral')->name('CSVGeneral');
+Route::get('/filtrar_pedido_alistado_consecutivo', 'HistorialController@filtrar_por_consecutivo')->name('filtrar_pedido_alistado_consecutivo');
+
+Route::get('/GenerarCSV/{ConsecutivoPedido}', 'ConsultaController@GenerarCSV');
+
+Route::post('/CSVcreation', 'HistorialController@CSVcreation')->name('CSVcreation');
+
+Route::get('/CSVGeneral', 'HistorialController@CSVGeneral')->name('CSVGeneral');
 
 Route::get('/GenerarPDF/{ConsecutivoPedido}', 'ConsultaController@GenerarPDF');
 

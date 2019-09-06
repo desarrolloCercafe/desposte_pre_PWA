@@ -77,6 +77,7 @@ function verificarFiltros() {
 }
 
 function SaveData(){
+
     var selectFecha, selectCliente, tipoPresentacion;
     var valorFecha;
     var valorFecha1 = 0;
@@ -272,17 +273,18 @@ function SendQueryHistorialCSV(objeto) {
         if (this.readyState==4 && this.status==200) {
 
             var json = ajax.responseText;
-//		console.log(json);
             if(json == "no hay resultados"){
+                //NotFoundResultsHistorial();
                 var messageError = document.getElementById('textInfo'); 
                 messageError.innerHTML = "No hay resultados.";
                 document.getElementById('DesplegarErrorModal').click();
             }else{
-	    var form = document.getElementById('CSVcreation');
-/*   		if(objeto.hasOwnProperty('codCliente')){
+		    var form = document.getElementById('CSVcreation');
+
+    		if(objeto.hasOwnProperty('codCliente')){
 	        var data = document.querySelector('#dataCliente2 > option[value="'+objeto.codCliente+'"]');
         	objeto.codCliente = data.innerHTML;
-	        }*/
+	        }
 
  	   var contentForm = `
        		 ${objeto.hasOwnProperty('fechaInicioH') ?
@@ -295,15 +297,6 @@ function SendQueryHistorialCSV(objeto) {
 	        ${objeto.hasOwnProperty('tipoPresentacion') ?
 	            `<input type="hidden" name="tipoPresentacion" value="${objeto.tipoPresentacion}">` : ""
 	        }
-		${objeto.hasOwnProperty('valorFecha')?
-		    `<input type="hidden" name="valorFecha" value="${objeto.valorFecha}">`:""
-		}
-		${objeto.hasOwnProperty('FechaHoy')?
-		    `<input type="hidden" name="FechaHoy" value="${objeto.FechaHoy}">`:""
-		}
-		${objeto.hasOwnProperty('FechaAyer')?
-		    `<input type="hidden" name="FechaAyer" value="$objeto.FechaAyer">`:""
-		}
 	    `;
 
 	    form.innerHTML += contentForm;
@@ -322,32 +315,24 @@ function SendQueryHistorialPDF(objeto) {
 
     var form = document.getElementById('pdfGeneral');
 
-/*    if(objeto.hasOwnProperty('codCliente')){
+    if(objeto.hasOwnProperty('codCliente')){
         var data = document.querySelector('#dataCliente2 > option[value="'+objeto.codCliente+'"]');
         objeto.codCliente = data.innerHTML;
-    }*/
+    }
 
     var contentForm = `
-         ${objeto.hasOwnProperty('fechaInicioH') ?
-             `<input type="hidden" name="fechaInicioH" value="${objeto.fechaInicioH}">
-              <input type="hidden" name="fechaFin" value="${objeto.fechaFin}">` : ''
-         }
-         ${objeto.hasOwnProperty('codCliente') ?
-             `<input type="hidden" name="codCliente" value="${objeto.codCliente}">` : ""
-         }
-         ${objeto.hasOwnProperty('tipoPresentacion') ?
-             `<input type="hidden" name="tipoPresentacion" value="${objeto.tipoPresentacion}">` : ""
-         }
-         ${objeto.hasOwnProperty('valorFecha')?
-             `<input type="hidden" name="valorFecha" value="${objeto.valorFecha}">`:""
-         }
-         ${objeto.hasOwnProperty('FechaHoy')?
-             `<input type="hidden" name="FechaHoy" value="${objeto.FechaHoy}">`:""
-         }
-         ${objeto.hasOwnProperty('FechaAyer')?
-             `<input type="hidden" name="FechaAyer" value="$objeto.FechaAyer">`:""
-         }
+        ${objeto.hasOwnProperty('fechaInicioH') ?
+            `<input type="hidden" name="fechaInicioH" value="${objeto.fechaInicioH}">
+            <input type="hidden" name="fechaFin" value="${objeto.fechaFin}">` : ''
+        }
 
+        ${objeto.hasOwnProperty('codCliente') ?
+            `<input type="hidden" name="codCliente" value="${objeto.codCliente}">` : ""
+        }
+
+        ${objeto.hasOwnProperty('tipoPresentacion') ?
+            `<input type="hidden" name="tipoPresentacion" value="${objeto.tipoPresentacion}">` : ""
+        }
     `;
 
     form.innerHTML += contentForm;
@@ -445,7 +430,13 @@ function TablePedidoHistorial(objeto) {
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item" href="/editPedido/${item.id}">Editar pedido</a>
-		    <a class="dropdown-item" href="/GenerarCSV/${item.id}">Generar CSV</a>
+
+                    <form action="{{route('GenerarCSV')}}" method="post">
+			<meta name="_token" content="{{csrf_token()}}">
+                        <input type="hidden" name="consecutivo" value="${item.id}">
+                        <input type="submit" class="dropdown-item" value="Generar CSV">
+                    </form>
+
                     <a class="dropdown-item" href="/GenerarPDF/${item.id}">Generar PDF</a>
                 </div>
             </div>

@@ -75,27 +75,38 @@ if(document.getElementById('addProductoEdit')){
                     CantidadDespachada: CantidadDespachada.value,
                     unidadSeleccionada: valueRadio
                 };
-    
+
                 array.push(objeto);
-                
+
             }
-    
-            var textSelect = document.getElementById('selectProducto').options[selectProducto.selectedIndex].text;
-    
+
+            var textSelect = document.getElementById('selectProducto').value;
+            var value = textSelect.split(",");
+
+
+            var productoSeleccionado = {
+                codigoProducto: value[0],
+                NombreProducto: value[1],
+                CantidadSolicitada: 0,
+                CantidadDespachada: 0,
+                unidadSeleccionada: 0
+            }
+/*            var textSelect = document.getElementById('selectProducto').options[selectProducto.selectedIndex].text;
+
             var productoSeleccionado = {
                 codigoProducto: selectProducto.value,
                 NombreProducto: textSelect,
                 CantidadSolicitada: 0,
                 CantidadDespachada: 0,
                 unidadSeleccionada: 0
-            }
-    
+            }*/
+
             array.push(productoSeleccionado);
-    
+
             localStorage.setItem("productos", JSON.stringify(array));
-            
+
             generarTablaEditarPedido(JSON.parse(localStorage.getItem("productos")));
-    
+
             document.getElementById('cerrarAgregarProductoEditar').click();
         }
     });
@@ -119,10 +130,10 @@ function generarTablaEditarPedido(objeto){
                     <p id='nombre${i}'>${producto.NombreProducto}</p>
                 </td>
                 <td>
-                    <input type="number" name="CantidadSolicitada" ${producto.CantidadSolicitada == 0? "":`value="${producto.CantidadSolicitada}"`}" class="form-control" min="0" id="CantidadSolicitada${i}">
+                    <input type="number" name="CantidadSolicitada" ${producto.CantidadSolicitada == 0? "":`value="${producto.CantidadSolicitada}"`}" class="form-control" min="0" id="CantidadSolicitada${i}" step="0.01">
                 </td>
                 <td>
-                    <input type="number" name="CantidadDespachada" ${producto.CantidadDespachada == 0? "":`value="${producto.CantidadDespachada}"`}" class="form-control" min="0" id="CantidadDespachada${i}">
+                    <input type="number" name="CantidadDespachada" ${producto.CantidadDespachada == 0? "":`value="${producto.CantidadDespachada}"`}" class="form-control" min="0" id="CantidadDespachada${i}" step="0.01">
                 </td>
                 <td class="text-left">
                     ${producto.unidadSeleccionada == 0 ? 

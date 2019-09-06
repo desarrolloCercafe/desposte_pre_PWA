@@ -21,6 +21,11 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
+
+			<div class="col-md-2">
+				<input type="number" class="form-control" placeholder="Consecutivo" id="consecutivo_a_buscar">
+			</div>
+
                         <div class="col-md-3 mb-1">
                             <!--<input type="date" class="form-control" id="fechaInicio">-->
                             <select name="rangoFechas" id="rangoFechas" class="form-control">
@@ -30,10 +35,6 @@
                                 <option value="3" onclick="DespliegueModal()">Otro</option>
                             </select>
                         </div>
-    
-                        <!--<div class="col-md-2 mb-3">
-                            <input type="date" class="form-control" id="fechaFinal">
-                        </div>-->
     
                         <div class="col-md-2 mb-3">
                             <input type="text" id="codCliente" name="codCliente" list="dataCliente" class="form-control" placeholder="Seleccionar cliente">
@@ -82,7 +83,7 @@
                         </thead>
                         <tbody id="BodyTablePedidos">
                             <?php $i = 0; ?>
-                            @if ($pedidos[0] != null)                            
+                            @if ($pedidos[0] != null)
                                 @foreach ($pedidos as $pedido)
                                     @if ($pedido->estado == 1)
                                         <tr>
@@ -93,13 +94,10 @@
                                                 </button>
                                             </th>
                                             <td id="fecha<?php echo $i; ?>">{{$pedido->fechaEntrega}}
-                                            
                                                 <!--<script type="text/javascript">
                                                     var fecha = '<?php //echo $pedido->fechaSolicitud; ?>';
                                                     var contador = '<?php //echo $i; ?>';
-                                                
                                                     var fechaCortada = fecha.substring(0, 10);
-                                                
                                                     document.getElementById("fecha"+contador).innerHTML = fechaCortada;
                                                 </script>-->
     
@@ -184,8 +182,12 @@
             </div>
             <div class="modal-body">
                 <div class="row">
+
+			<div class="col-md-2">
+				<input type="number" placeholder="Consecutivo" id="consecutivo_a_buscar_historial" class="form-control">
+			</div>
+
                     <div class="col-md-4 mb-1">
-                        <!--<input type="date" class="form-control" id="fechaInicioHistorial" >-->
                         <select name="rangoFechasHistorial" id="rangoFechasHistorial" class="form-control">
                             <option value="0" selected>Seleccionar una fecha de búsqueda</option>
                             <option value="1">Hoy</option>
@@ -193,10 +195,6 @@
                             <option value="3">Otro</option>
                         </select>
                     </div>
-
-                    <!--<div class="col-md-2 mb-3">
-                        <input type="date" class="form-control" id="fechaFinalHistorial">
-                    </div>-->
 
                     <div class="col-md-3 mb-3">
 
@@ -256,13 +254,10 @@
                                                     </button>
                                                 </th>
                                                 <td id="fecha<?php echo $i; ?>">{{$pedido2->fechaSolicitud}}
-                                                
                                                     <script type="text/javascript">
                                                         var fecha = '<?php echo $pedido2->fechaSolicitud; ?>';
                                                         var contador = '<?php echo $i; ?>';
-                                                    
                                                         var fechaCortada = fecha.substring(0, 10);
-                                                    
                                                         document.getElementById("fecha"+contador).innerHTML = fechaCortada;
                                                     </script>
 
@@ -270,7 +265,6 @@
                                                 <td>{{$pedido2->fechaEntrega}}</td>
                                                 <td>{{$pedido2->razonSocial}}</td>
                                                 <td>Alistado</td>
-                                            
                                                 <td>
                                                     <div class="dropdown">
                                                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -278,27 +272,21 @@
                                                         </button>
                                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                             <a class="dropdown-item" href="{{ url('/editPedido', ['ConsecutivoPedido' => $pedido2->id]) }}">Editar pedido</a>
-                                                            
-                                                            <form action="{{route('GenerarCSV')}}" method="post">
-                                                                {{ csrf_field() }}
-                                                                <input type="hidden" name="consecutivo" value="{{$pedido2->id}}">
-                                                                <input type="submit" class="dropdown-item" value="Generar CSV">
-                                                            </form>
-                                                            
-                                                            <a class="dropdown-item" href="{{ url('/GenerarPDF', ['ConsecutivoPedido' => $pedido2->id]) }}">Generar PDF</a>
+
+							   <a class="dropdown-item" href="{{ url('/GenerarCSV', ['ConsecutivoPedido' => $pedido2->id]) }}">Generar CSV</a>
+
+                                                            <a class="dropdown-item" href="{{ url('/GenerarPDF', ['ConsecutivoPedido' => $pedido2->id]) }}" target="_blank">Generar PDF</a>
 
                                                         </div>
                                                     </div>
                                                 </td>
                                             </tr>
-                                        
                                             <?php $i++; ?>
                                         @endif
                                     @endforeach
                                 @endif
                             </tbody>
                         </table>
-                        
                         <div class="d-flex justify-content-end mr-2" id="footerHistorial">
                             {{$pedidos2->links()}}
                         </div>
@@ -309,7 +297,7 @@
                                 <form action="{{route('PDFGeneral')}}" method="post" id="pdfGeneral">
                                     {{ csrf_field() }}
                                 </form>
-                                <form action="{{route('CSVGeneral')}}" method="post" id="csvGeneral">
+                                <form action="{{route('CSVcreation')}}" method="post" id="CSVcreation">
                                     {{ csrf_field() }}
                                 </form>
                                 <button type="button" class="btn btn-secondary btn-lg" id="GlobalGenerarPDF" disabled>Generar PDF</button>
@@ -467,6 +455,6 @@ var searchValue = obj.value;
 <script src="{{asset('js/scriptConsulta.js')}}"></script>
 <script src="{{asset('js/filtroConsultas.js')}}"></script>
 <script src="{{asset('js/filtroHistorial.js')}}"></script>
-
+<script src="{{asset('js/filtro_consecutivo.js')}}"></script>
 
 @endsection

@@ -3,14 +3,13 @@ if(document.getElementById('botonEditarPedido')){
 
         document.getElementById('botonEditarPedido').removeAttribute("data-toggle");
         document.getElementById('botonEditarPedido').dataset.target = "";
-    
+
         if(validarTableEditar()){
             var contenidoTable;
             contenidoTable = SaveProducts();
             SendQueryUpdate(contenidoTable);
         }
-        //validarTableEditar();
-    
+
     });
 }
 
@@ -21,7 +20,7 @@ function validarTableEditar(){
     var botonEditarPedido = document.getElementById('botonEditarPedido');
 
     if(fechaEntrega.value.length == 0){
-        
+
         messageValidation.innerHTML = "No haz seleccionado una fecha de entrega";
         botonEditarPedido.setAttribute("data-toggle", "modal");
         botonEditarPedido.dataset.target = "#ValidationModal";
@@ -49,11 +48,11 @@ function validarTableEditar(){
             }else if(radio[1].checked){
                 continue;
             }else{
-                Errores('radio');
+                ErroresEditarPedido('radio');
                 error = 1;
                 break;
             }
-        
+
             error = 0;
 
         }
@@ -77,12 +76,12 @@ function ErroresEditarPedido(error){
             botonEditarPedido.click();
             break;
         case 'radio':
-            messageValidation.innerHTML = "Existen Cantidades vacías";
+            messageValidation.innerHTML = "Existen Unidades no seleccionadas";
             botonEditarPedido.setAttribute("data-toggle", "modal");
             botonEditarPedido.dataset.target = "#ValidationModal";
             botonEditarPedido.click();
             break;
-            
+
     }
 }
 
@@ -95,7 +94,6 @@ function SaveProducts(){
     for (let index = 0; index < contentTableEditar.rows.length; index++) {
         
         var consecutivoProducto = document.getElementById('codigo'+index);
-        //var NombrePedido = document.getElementById('nombre'+index);
         var cantidadSolicitada = document.getElementById('CantidadSolicitada'+index);
         var cantidadDespachada = document.getElementById('CantidadDespachada'+index);
         var radio = document.getElementsByName("unidad"+index);
@@ -124,34 +122,18 @@ function SaveProducts(){
 
 function SendQueryUpdate(objeto){
 
-    //console.log(objeto);
-
     var consecutivoPedido = document.getElementById('ConsecutivoPedido').value;
-    var fechaSolicitud = document.getElementById('FechaSolicitud').value;
-    /*var url = "/UpdatePedido";
-    var parametros = "productos=" + encodeURIComponent(JSON.stringify(objeto)) + "&consecutivo="+ encodeURIComponent(consecutivoPedido) + "&fechaSolicitud="+encodeURIComponent(fechaSolicitud);
-
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
-    xhr.send(parametros);*/
+    var fechaEntrega = document.getElementById('fechaEntrega').value;
 
     var formElements = `
         <textarea name="productosPedido" style="display:none;">${JSON.stringify(objeto)}</textarea>
         <input type="hidden" value="${consecutivoPedido}" name="consecutivoPedido">
-        <input type="hidden" value="${fechaSolicitud}" name="fechaSolicitud">
+        <input type="hidden" value="${fechaEntrega}" name="fechaEntrega">
     `;
-    
     document.getElementById('formUpdatePedido').innerHTML += formElements;
 
     localStorage.removeItem("productos");
-    //localStorage.clear();
 
     document.getElementById('formUpdatePedido').submit();
-
-
-    /*document.getElementById('formUpdatePedido').appendChild(JSON.stringify(objeto));
-    document.getElementById('formUpdatePedido').appendChild(consecutivoPedido);
-    document.getElementById('formUpdatePedido').appendChild(fechaSolicitud);*/
 
 }

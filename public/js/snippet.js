@@ -222,5 +222,8 @@ function SendData(obj){
 
     localStorage.removeItem("productos");
 
-    form.submit();
+    document.getElementById('desplegar_modal_registro_pedido').click();
+
+    setTimeout(function(){ form.submit(); }, 3000);
+    //form.submit();
 }
